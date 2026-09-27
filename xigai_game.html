@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>法治·红徽 · 全面依法治国互动剧场</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #2a0e0e;
+            background-image: radial-gradient(circle at 30% 20%, #4a1a1a 0%, #1f0808 80%);
+            font-family: 'Segoe UI', 'Noto Serif SC', '宋体', 'SimSun', serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            color: #f5e6d8;
+        }
+
+        .game-wrapper {
+            max-width: 1000px;
+            width: 100%;
+            background: #fdf6ee;
+            background-image: linear-gradient(145deg, #fffaf4 0%, #f7e9d8 100%);
+            border-radius: 48px 48px 32px 32px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8), 0 0 0 2px #b8864b inset, 0 0 0 6px #e6cfb0 inset;
+            padding: 20px 20px 28px;
+            color: #2c1a0e;
+            position: relative;
+        }
+
+        .game-wrapper::before {
+            content: "";
+            position: absolute;
+            top: 10px; left: 20px; right: 20px; bottom: 10px;
+            border: 1px dashed #c9a86b;
+            border-radius: 36px;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        /* ===== 双轴天平 ===== */
+        .balance-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f0e0cc;
+            border-radius: 100px;
+            padding: 8px 16px;
+            margin-bottom: 18px;
+            box-shadow: inset 0 4px 8px rgba(120, 70, 30, 0.2), 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #b8864b;
+            font-weight: 600;
+            position: relative;
+            z-index: 2;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .balance-label {
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        .balance-label.left { color: #8b3f1d; }
+        .balance-label.right { color: #a34e1e; }
+
+        .icon-proc, .icon-sub {
+            font-size: 1.3rem;
+        }
+
+        .balance-meter {
+            flex: 1;
+            min-width: 120px;
+            height: 16px;
+            background: #d9c2a5;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 6px rgba(80, 40, 10, 0.4);
+            position: relative;
+            border: 1px solid #a07840;
+        }
+
+        .balance-fill {
+            height: 100%;
+            width: 50%;
+            background: linear-gradient(90deg, #d45d1e, #b1420b, #8b2e08);
+            border-radius: 30px;
+            transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: 0 0 12px #d45d1e;
+        }
+
+        .balance-values {
+            display: flex;
+            gap: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #7a3a1a;
+        }
+
+        .balance-values span {
+            background: #fdf0e2;
+            padding: 3px 10px;
+            border-radius: 40px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* ===== 场景标题 ===== */
+        .scene-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 8px 0 16px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .scene-header h2 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            background: linear-gradient(180deg, #8b2e08, #5a1e05);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 2px 2px 0 #e6cfb0;
+            border-bottom: 3px solid #b8864b;
+            padding-bottom: 6px;
+            display: inline-block;
+            text-align: center;
+        }
+
+        /* ===== 内容区 ===== */
+        .scene-content {
+            background: #fffaf4;
+            border-radius: 28px;
+            padding: 22px 18px;
+            box-shadow: inset 0 0 0 1px #e6cfb0, inset 0 0 20px #e0c8a8, 0 10px 18px rgba(80, 45, 15, 0.25);
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #b8864b;
+            position: relative;
+            z-index: 2;
+        }
+
+        .scene-image-placeholder {
+            height: 80px;
+            background: linear-gradient(120deg, #e6cfb0, #d4b48a);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #5a3a1a;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            border: 1px solid #b8864b;
+            background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.15) 0px, rgba(255,255,255,0.15) 10px, transparent 10px, transparent 20px);
+        }
+
+        .dialogue-box {
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 18px;
+            padding: 12px 14px;
+            background: #ffffff;
+            border-left: 7px solid #b1420b;
+            border-radius: 10px 20px 20px 10px;
+            box-shadow: 0 4px 12px rgba(120, 60, 20, 0.12);
+            color: #2c1a0e;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .dialogue-box strong { color: #b1420b; font-weight: 800; }
+
+        .case-box {
+            background: #fff9ec;
+            border: 2px solid #c9a86b;
+            border-radius: 16px;
+            padding: 14px 16px;
+            margin: 12px 0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .case-box h4 {
+            font-size: 1rem;
+            color: #7a4d1e;
+            margin-bottom: 8px;
+        }
+
+        .options-area {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .option-btn {
+            background: #f0e0cc;
+            border: 2px solid #b8864b;
+            color: #2c1a0e;
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 14px 18px;
+            border-radius: 46px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            box-shadow: 0 5px 0 #8b5e2e, 0 7px 10px rgba(60, 30, 10, 0.2);
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            line-height: 1.4;
+        }
+
+        .option-btn:hover {
+            background: #fcf0e0;
+            border-color: #a0703a;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 0 #8b5e2e, 0 10px 16px rgba(60, 30, 10, 0.3);
+        }
+
+        .option-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #8b5e2e, 0 4px 8px rgba(60, 30, 10, 0.3);
+        }
+
+        .option-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .option-icon { font-size: 1.4rem; }
+
+        /* ===== 反馈 ===== */
+        .feedback-message {
+            margin-top: 14px;
+            padding: 12px 16px;
+            background: #fff8ec;
+            border-radius: 20px;
+            border: 2px solid #c9a86b;
+            font-size: 0.93rem;
+            color: #2a1e0e;
+            font-weight: 500;
+            box-shadow: inset 0 1px 8px #e8d5b0;
+            animation: fadeSlide 0.3s ease;
+            line-height: 1.6;
+        }
+
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .continue-btn {
+            margin-top: 16px;
+            align-self: center;
+            background: #b1420b;
+            border: none;
+            color: #fdf6ee;
+            font-size: 1rem;
+            font-weight: 700;
+            padding: 12px 36px;
+            border-radius: 60px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #7a2a06, 0 8px 16px rgba(0,0,0,0.3);
+            transition: all 0.15s;
+            letter-spacing: 2px;
+            font-family: inherit;
+            border: 1px solid #d45d1e;
+        }
+
+        .continue-btn:hover {
+            background: #c94e12;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 #7a2a06, 0 12px 20px rgba(0,0,0,0.3);
+        }
+
+        .continue-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #7a2a06, 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        .relic-badge {
+            display: inline-block;
+            background: #e6cfb0;
+            color: #5a1e05;
+            font-size: 0.78rem;
+            padding: 5px 14px;
+            border-radius: 40px;
+            margin-top: 6px;
+            font-weight: 700;
+            border: 1px solid #b8864b;
+        }
+
+        /* ===== 拼图关卡 ===== */
+        .puzzle-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-top: 12px;
+        }
+
+        .puzzle-slot {
+            background: #f0e0cc;
+            border: 2px dashed #b8864b;
+            border-radius: 16px;
+            padding: 12px 10px;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #8b5e2e;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .puzzle-slot.filled {
+            background: #fdf0e2;
+            border: 2px solid #b1420b;
+            color: #2c1a0e;
+            font-weight: 700;
+        }
+
+        .puzzle-slot.correct {
+            background: #d4edda;
+            border-color: #2e7d32;
+            color: #1b5e20;
+        }
+
+        .puzzle-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .puzzle-card {
+            background: #fff8ec;
+            border: 2px solid #c9a86b;
+            border-radius: 40px;
+            padding: 10px 18px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #4a3018;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 0 #a07840, 0 6px 8px rgba(0,0,0,0.15);
+            user-select: none;
+        }
+
+        .puzzle-card:hover {
+            background: #fffdf5;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #a07840, 0 10px 14px rgba(0,0,0,0.2);
+        }
+
+        .puzzle-card:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #a07840, 0 4px 6px rgba(0,0,0,0.15);
+        }
+
+        .puzzle-card.selected {
+            background: #b1420b;
+            color: #fff;
+            border-color: #7a2a06;
+        }
+
+        .puzzle-card.used {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* ===== 立法博弈 ===== */
+        .lobby-item {
+            background: #fdf0e2;
+            border: 2px solid #d4b48a;
+            border-radius: 16px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+        }
+
+        .lobby-item h5 {
+            font-size: 0.9rem;
+            color: #8b3f1d;
+            margin-bottom: 8px;
+        }
+
+        .lobby-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .lobby-btns button {
+            flex: 1;
+            padding: 8px 6px;
+            border-radius: 30px;
+            border: 2px solid #b8864b;
+            background: #f0e0cc;
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            color: #2c1a0e;
+        }
+
+        .lobby-btns button.active {
+            background: #b1420b;
+            color: #fff;
+            border-color: #7a2a06;
+        }
+
+        .lobby-btns button:hover {
+            background: #e6cfb0;
+        }
+
+        .lobby-btns button.active:hover {
+            background: #c94e12;
+        }
+
+        /* ===== 结局 ===== */
+        .end-screen { text-align: center; padding: 16px 8px; }
+
+        .end-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 16px 0 14px;
+            color: #8b2e08;
+            text-shadow: 3px 3px 0 #e6cfb0;
+            letter-spacing: 4px;
+        }
+
+        .end-quote {
+            font-size: 1.05rem;
+            font-style: italic;
+            background: #fdf0e2;
+            padding: 16px 18px;
+            border-radius: 24px;
+            margin: 18px 0;
+            border: 2px dashed #b8864b;
+            color: #2c1a0e;
+            line-height: 1.7;
+            font-weight: 500;
+        }
+
+        .score-summary {
+            background: #f0e0cc;
+            padding: 18px;
+            border-radius: 20px;
+            margin: 18px 0;
+            box-shadow: inset 0 0 0 2px #e0c8a8;
+            font-size: 0.95rem;
+            text-align: left;
+        }
+
+        .score-summary p {
+            margin: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dashed #b8864b;
+            padding-bottom: 5px;
+        }
+
+        .restart-btn {
+            background: #8b2e08;
+            color: #fdf6ee;
+            border: none;
+            font-size: 1.05rem;
+            font-weight: 700;
+            padding: 14px 40px;
+            border-radius: 60px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #5a1e05, 0 10px 20px rgba(0,0,0,0.3);
+            margin-top: 16px;
+            transition: all 0.15s;
+            letter-spacing: 2px;
+            font-family: inherit;
+        }
+
+        .restart-btn:hover {
+            background: #a34e1e;
+            transform: translateY(-2px);
+        }
+
+        .restart-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #5a1e05, 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 600px) {
+            .game-wrapper { padding: 12px 10px 18px; border-radius: 28px; }
+            .scene-header h2 { font-size: 1.2rem; letter-spacing: 1px; }
+            .dialogue-box { font-size: 0.9rem; padding: 10px; }
+            .option-btn { font-size: 0.85rem; padding: 12px 12px; }
+            .balance-label span:not(.icon-proc):not(.icon-sub) { display: none; }
+            .balance-values { font-size: 0.75rem; gap: 6px; }
+            .puzzle-area { grid-template-columns: 1fr; }
+            .end-title { font-size: 1.4rem; letter-spacing: 2px; }
+        }
+    </style>
+</head>
+<body>
+<div class="game-wrapper" id="gameWrapper">
+    <!-- 双轴天平 -->
+    <div class="balance-panel" id="balancePanel">
+        <div class="balance-label left">
+            <span class="icon-proc">⚖️</span>
+            <span>程序正义</span>
+        </div>
+        <div class="balance-meter">
+            <div class="balance-fill" id="balanceFill" style="width: 50%;"></div>
+        </div>
+        <div class="balance-values">
+            <span id="procValue">50</span>
+            <span id="subValue">50</span>
+        </div>
+        <div class="balance-label right">
+            <span>实质正义</span>
+            <span class="icon-sub">❤️</span>
+        </div>
+    </div>
+
+    <div id="dynamicContent"></div>
+</div>
+
+<script>
+    // ==================== 游戏状态 ====================
+    const gameState = {
+        proc: 50,   // 程序正义
+        sub: 50,    // 实质正义
+        currentScene: 'prologue',
+        currentStep: 0,
+        relics: [],
+        history: [],
+        puzzleFilled: 0,
+        lobbyChoices: {}
+    };
+
+    // ==================== 更新天平UI ====================
+    function updateBalanceUI() {
+        const fill = document.getElementById('balanceFill');
+        const procEl = document.getElementById('procValue');
+        const subEl = document.getElementById('subValue');
+        if (!fill || !procEl || !subEl) return;
+
+        let procPercent = Math.min(100, Math.max(0, gameState.proc));
+        fill.style.width = procPercent + '%';
+        procEl.textContent = Math.round(gameState.proc);
+        subEl.textContent = Math.round(gameState.sub);
+
+        const diff = Math.abs(gameState.proc - gameState.sub);
+        if (diff <= 10) {
+            fill.style.background = 'linear-gradient(90deg, #d45d1e, #b1420b, #8b2e08)';
+            fill.style.boxShadow = '0 0 12px #d45d1e';
+        } else if (gameState.proc > gameState.sub) {
+            fill.style.background = 'linear-gradient(90deg, #e68a2e, #d45d1e, #b1420b)';
+            fill.style.boxShadow = '0 0 14px #e68a2e';
+        } else {
+            fill.style.background = 'linear-gradient(90deg, #a34e1e, #8b2e08, #5a1e05)';
+            fill.style.boxShadow = '0 0 14px #a34e1e';
+        }
+    }
+
+    // ==================== 应用选择 ====================
+    function applyChoice(procImpact, subImpact, feedbackText, relic, nextScene, nextStep) {
+        gameState.proc = Math.min(100, Math.max(0, gameState.proc + procImpact));
+        gameState.sub = Math.min(100, Math.max(0, gameState.sub + subImpact));
+        updateBalanceUI();
+
+        gameState.history.push({
+            scene: gameState.currentScene,
+            step: gameState.currentStep,
+            proc: procImpact,
+            sub: subImpact
+        });
+
+        if (relic && !gameState.relics.includes(relic)) {
+            gameState.relics.push(relic);
+        }
+
+        const sceneContent = document.querySelector('.scene-content');
+        if (!sceneContent) return;
+
+        const oldFeedback = sceneContent.querySelector('.feedback-message');
+        if (oldFeedback) oldFeedback.remove();
+        const oldContinue = sceneContent.querySelector('.continue-btn');
+        if (oldContinue) oldContinue.remove();
+
+        const feedbackDiv = document.createElement('div');
+        feedbackDiv.className = 'feedback-message';
+        feedbackDiv.innerHTML = feedbackText;
+        if (relic) {
+            const badge = document.createElement('div');
+            badge.className = 'relic-badge';
+            badge.innerHTML = '📜 获得文物：' + relic;
+            feedbackDiv.appendChild(badge);
+        }
+        sceneContent.appendChild(feedbackDiv);
+
+        let targetScene = nextScene || gameState.currentScene;
+        let targetStep = (nextStep !== undefined) ? nextStep : gameState.currentStep + 1;
+
+        if (!nextScene) {
+            const scene = scenes[gameState.currentScene];
+            if (scene && targetStep >= scene.steps.length) {
+                const keys = Object.keys(scenes);
+                const idx = keys.indexOf(gameState.currentScene);
+                if (idx < keys.length - 1) {
+                    targetScene = keys[idx + 1];
+                    targetStep = 0;
+                } else {
+                    targetScene = 'ending';
+                    targetStep = 0;
+                }
+            }
+        }
+
+        const continueBtn = document.createElement('button');
+        continueBtn.className = 'continue-btn';
+        continueBtn.textContent = '继续前行 →';
+        continueBtn.onclick = () => {
+            gameState.currentScene = targetScene;
+            gameState.currentStep = targetStep;
+            renderScene();
+        };
+        sceneContent.appendChild(continueBtn);
+    }
+
+    // ==================== 场景数据 ====================
+    const scenes = {
+        prologue: {
+            title: '序章 · 法徽之下',
+            steps: [{
+                imagePlaceholder: '⚖️ 法院门口 · 法徽高悬 · 天平标识',
+                dialogue: `你是一名刚入职的法官助理。<br><br>今天，你收到了一份特殊的案卷。案卷背后，是全面依法治国的时代命题。<br><br>你将面对四个考验——<strong>审理一个案件、参与一次立法、完成一幅拼图、进行一次审查。</strong><br><br>法徽上的天平，左边是<strong>程序正义</strong>，右边是<strong>实质正义</strong>。你做的每一个决定，都会让天平发生倾斜。<br><br>准备好了吗？`,
+                options: [
+                    { text: '翻开案卷，开始审理', icon: '📂', proc: 0, sub: 0, feedback: '你翻开了案卷。第一关：电梯劝烟案。', next: { scene: 'case1', step: 0 } }
+                ]
+            }]
+        },
+
+        case1: {
+            title: '第一关 · 电梯劝烟案',
+            steps: [
+                {
+                    imagePlaceholder: '🏢 小区电梯 · 劝阻吸烟 · 突发心脏病',
+                    dialogue: `【案情简介】<br>张某在小区电梯内吸烟，邻居李某劝阻。二人发生言语争执，张某情绪激动，突发心脏病猝死。张某家属将李某告上法庭，索赔40万元。<br><br>你作为法官，第一步需要<strong>认定事实</strong>：李某的劝阻行为是否具有过错？`,
+                    options: [
+                        { text: '无过错，劝阻吸烟是正当行为', icon: '✅', proc: 5, sub: 5, feedback: '正确。劝阻吸烟是维护公共利益的正当行为，不具有过错。', next: { scene: 'case1', step: 1 } },
+                        { text: '有过错，言语争执导致情绪激动', icon: '❌', proc: -5, sub: -10, feedback: '偏差。劝阻行为本身正当，不能因言语争执就认定有过错。', next: { scene: 'case1', step: 1 } },
+                        { text: '部分过错，双方都有责任', icon: '⚠️', proc: 0, sub: -3, feedback: '折中但不够准确。公平责任不能滥用，无过错则无责任。', next: { scene: 'case1', step: 1 } }
+                    ]
+                },
+                {
+                    imagePlaceholder: '📖 法律适用 · 过错责任原则',
+                    dialogue: `第二步：<strong>法律适用</strong>。本案应适用哪条法律原则？`,
+                    options: [
+                        { text: '公平责任原则，双方分担损失', icon: '⚖️', proc: 3, sub: -5, feedback: '公平责任有严格适用条件，不能随意扩大。', next: { scene: 'case1', step: 2 } },
+                        { text: '过错责任原则，无过错则无责任', icon: '📖', proc: 8, sub: 8, feedback: '正确。过错责任是侵权责任的基本原则。', next: { scene: 'case1', step: 2 } },
+                        { text: '根据社会主义核心价值观判断', icon: '🌟', proc: 5, sub: 10, feedback: '非常准确。法律是成文的道德，道德是内心的法律。', next: { scene: 'case1', step: 2 } }
+                    ]
+                },
+                {
+                    imagePlaceholder: '🔨 判决结果 · 你如何判决？',
+                    dialogue: `第三步：<strong>判决结果</strong>。你如何判决？`,
+                    options: [
+                        { text: '李某不承担任何责任', icon: '🏆', proc: 8, sub: 10, feedback: '正确！最高人民法院指出，该判决“让维护社会公共利益和公序良俗的行为人免于担责，弘扬了社会主义核心价值观”。你获得了文物：法槌。', relic: '法槌', next: { scene: 'case2', step: 0 } },
+                        { text: '李某承担10%责任', icon: '📉', proc: 2, sub: -5, feedback: '偏差。无过错则无责任，不能让守法者为他人不幸买单。', next: { scene: 'case2', step: 0 } },
+                        { text: '双方各承担50%', icon: '⚖️', proc: -5, sub: -8, feedback: '错误。“100-1=0”，一次不公正的审判，其恶果甚至超过十次犯罪。', next: { scene: 'case2', step: 0 } }
+                    ]
+                }
+            ]
+        },
+
+        case2: {
+            title: '第二关 · 立法博弈',
+            steps: [
+                {
+                    imagePlaceholder: '🏛️ 全国人大常委会法工委 · 反电信网络诈骗法',
+                    dialogue: `你是全国人大常委会法工委的立法工作人员。当前，境外电信网络诈骗十分猖獗，需要制定《反电信网络诈骗法》。<br><br>四个利益方提出了各自诉求，你需要在<strong>有限时间内</strong>形成法律条款。<br><br><strong>请对每一方的诉求做出选择：</strong>`,
+                    options: [],
+                    special: 'lobby'
+                }
+            ]
+        },
+
+        case3: {
+            title: '第三关 · 法治拼图',
+            steps: [
+                {
+                    imagePlaceholder: '🧩 中国特色社会主义法治体系 · 五大体系',
+                    dialogue: `中国特色社会主义法治体系好比一座井然有序、连为一体的建筑物，它的基本框架一共有五个方面。<br><br><strong>请将下方的要素卡片，点击后放入对应的位置。</strong>`,
+                    options: [],
+                    special: 'puzzle'
+                }
+            ]
+        },
+
+        case4: {
+            title: '第四关 · 合宪性审查',
+            steps: [
+                {
+                    imagePlaceholder: '📜 全国人大常委会法工委 · 同命不同价',
+                    dialogue: `【审查对象】某司法解释规定：城乡居民死亡赔偿金，农村户籍按农村居民人均纯收入标准计算，城镇户籍按城镇居民人均可支配收入标准计算。以北京2020年为例，两者相差近90万元。<br><br>第一步：该规定是否符合宪法？`,
+                    options: [
+                        { text: '不符合，违反平等原则', icon: '❌', proc: 10, sub: 10, feedback: '正确。宪法规定公民在法律面前一律平等。', next: { scene: 'case4', step: 1 } },
+                        { text: '符合，城乡差异是客观事实', icon: '📊', proc: -10, sub: -10, feedback: '错误。宪法规定的平等原则必须贯彻。', next: { scene: 'case4', step: 1 } },
+                        { text: '部分符合，需要修改', icon: '⚠️', proc: 5, sub: 5, feedback: '方向正确，但更准确的判断是“不符合”。', next: { scene: 'case4', step: 1 } }
+                    ]
+                },
+                {
+                    imagePlaceholder: '🔍 你如何建议？',
+                    dialogue: `第二步：你如何建议？`,
+                    options: [
+                        { text: '建议修改，统一采用城镇居民标准', icon: '✅', proc: 10, sub: 10, feedback: '正确。2022年5月1日，人身损害赔偿标准实现“城乡统一”。你获得了文物：宪法。', relic: '宪法', next: { scene: 'case4', step: 2 } },
+                        { text: '维持现状，等待条件成熟', icon: '⏳', proc: -8, sub: -8, feedback: '错误。合宪性审查就是要及时纠正违宪规定。', next: { scene: 'case4', step: 2 } },
+                        { text: '由地方自行决定', icon: '🏘️', proc: -5, sub: -5, feedback: '错误。维护国家法治统一是全面依法治国的重要方面。', next: { scene: 'case4', step: 2 } }
+                    ]
+                },
+                {
+                    imagePlaceholder: '🌟 该审查体现了什么？',
+                    dialogue: `第三步：该审查体现了什么？`,
+                    options: [
+                        { text: '宪法权威和国家法治统一', icon: '🏛️', proc: 8, sub: 8, feedback: '正确。抓住依宪治国、依宪执政，就是抓住了根本，抓住了“国之大者”。', relic: '合宪性审查案例', next: { scene: 'ending', step: 0 } },
+                        { text: '司法实践的现实考量', icon: '⚖️', proc: -3, sub: -3, feedback: '不够准确。合宪性审查的核心是维护宪法权威。', next: { scene: 'ending', step: 0 } },
+                        { text: '城乡二元结构的调整', icon: '🏙️', proc: 0, sub: 0, feedback: '部分正确，但未抓住宪法审查的本质。', next: { scene: 'ending', step: 0 } }
+                    ]
+                }
+            ]
+        },
+
+        ending: {
+            title: '终章 · 法治中国',
+            steps: [{
+                imagePlaceholder: '⚖️ 你的法治天平',
+                dialogue: '',
+                options: []
+            }]
+        }
+    };
+
+    // ==================== 立法博弈渲染 ====================
+    function renderLobby(sceneContent) {
+        const lobbies = [
+            { id: 'police', name: '公安机关', desc: '需要更多权限，快速冻结涉案资金', options: ['支持', '反对', '折中'] },
+            { id: 'bank', name: '金融机构', desc: '担心误伤正常客户，要求明确标准', options: ['支持', '反对', '折中'] },
+            { id: 'telecom', name: '电信运营商', desc: '拦截诈骗电话，但影响正常通信', options: ['支持', '反对', '折中'] },
+            { id: 'public', name: '普通群众', desc: '保护“钱袋子”，但担心隐私泄露', options: ['支持', '反对', '折中'] }
+        ];
+
+        let html = '<div style="margin-top:10px;">';
+        lobbies.forEach(l => {
+            html += `
+                <div class="lobby-item">
+                    <h5>${l.name}：${l.desc}</h5>
+                    <div class="lobby-btns" data-id="${l.id}">
+                        ${l.options.map(o => `<button data-opt="${o}">${o}</button>`).join('')}
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        html += '<button class="continue-btn" id="lobbySubmit" style="margin-top:16px;">提交立法条款 →</button>';
+
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = html;
+        sceneContent.appendChild(wrapper);
+
+        wrapper.querySelectorAll('.lobby-btns').forEach(group => {
+            const id = group.dataset.id;
+            group.querySelectorAll('button').forEach(btn => {
+                btn.onclick = () => {
+                    group.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    gameState.lobbyChoices[id] = btn.dataset.opt;
+                };
+            });
+        });
+
+        document.getElementById('lobbySubmit').onclick = () => {
+            const choices = gameState.lobbyChoices;
+            const keys = Object.keys(choices);
+            if (keys.length < 4) {
+                alert('请对每一方的诉求做出选择！');
+                return;
+            }
+            let support = 0, oppose = 0, compromise = 0;
+            keys.forEach(k => {
+                if (choices[k] === '支持') support++;
+                else if (choices[k] === '反对') oppose++;
+                else compromise++;
+            });
+            let procImpact = 0, subImpact = 0, feedback = '';
+            if (compromise >= 3) {
+                procImpact = 10; subImpact = 10;
+                feedback = '你充分平衡了各方利益，形成了科学合理的法律条款。《反电信网络诈骗法》于2022年12月1日正式施行。你获得了文物：反诈法文本。';
+            } else if (support >= 3) {
+                procImpact = -5; subImpact = -5;
+                feedback = '你过度支持一方，法律可操作性差。立法需要科学立法、民主立法、依法立法。';
+            } else if (oppose >= 3) {
+                procImpact = -8; subImpact = -8;
+                feedback = '你过度反对各方诉求，法律难以出台。立法要兼顾各方利益。';
+            } else {
+                procImpact = 5; subImpact = 5;
+                feedback = '你基本平衡了各方利益，但仍有提升空间。你获得了文物：反诈法文本。';
+            }
+            applyChoice(procImpact, subImpact, feedback, '反诈法文本', 'case3', 0);
+        };
+    }
+
+    // ==================== 拼图渲染 ====================
+    function renderPuzzle(sceneContent) {
+        const items = [
+            { id: 'law', label: '完备的法律规范体系', slot: 0 },
+            { id: 'impl', label: '高效的法治实施体系', slot: 1 },
+            { id: 'sup', label: '严密的法治监督体系', slot: 2 },
+            { id: 'guar', label: '有力的法治保障体系', slot: 3 },
+            { id: 'party', label: '完善的党内法规体系', slot: 4 }
+        ];
+        const slots = [
+            { id: 0, label: '① 基础' },
+            { id: 1, label: '② 重点' },
+            { id: 2, label: '③ 保障' },
+            { id: 3, label: '④ 依托' },
+            { id: 4, label: '⑤ 特色' }
+        ];
+
+        const shuffled = [...items].sort(() => Math.random() - 0.5);
+
+        let html = `
+            <div class="puzzle-area" id="puzzleArea">
+                ${slots.map(s => `<div class="puzzle-slot" data-slot="${s.id}" id="slot-${s.id}">${s.label}<br><span style="font-size:0.75rem;">点击卡片放入</span></div>`).join('')}
+            </div>
+            <div class="puzzle-cards" id="puzzleCards">
+                ${shuffled.map(item => `<div class="puzzle-card" data-id="${item.id}" data-slot="${item.slot}">${item.label}</div>`).join('')}
+            </div>
+            <div style="margin-top:12px;font-size:0.85rem;color:#8b5e2e;">提示：点击卡片选中，再点击上方槽位放入</div>
+        `;
+
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = html;
+        sceneContent.appendChild(wrapper);
+
+        let selectedCard = null;
+
+        wrapper.querySelectorAll('.puzzle-card').forEach(card => {
+            card.onclick = () => {
+                if (card.classList.contains('used')) return;
+                wrapper.querySelectorAll('.puzzle-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                selectedCard = card;
+            };
+        });
+
+        wrapper.querySelectorAll('.puzzle-slot').forEach(slot => {
+            slot.onclick = () => {
+                if (!selectedCard) {
+                    alert('请先点击下方卡片选中');
+                    return;
+                }
+                const slotId = parseInt(slot.dataset.slot);
+                const cardSlot = parseInt(selectedCard.dataset.slot);
+                if (slot.classList.contains('filled')) {
+                    alert('该位置已有内容');
+                    return;
+                }
+                if (slotId === cardSlot) {
+                    slot.innerHTML = selectedCard.textContent;
+                    slot.classList.add('filled', 'correct');
+                    selectedCard.classList.add('used');
+                    selectedCard.classList.remove('selected');
+                    gameState.puzzleFilled++;
+                    selectedCard = null;
+                    if (gameState.puzzleFilled === 5) {
+                        setTimeout(() => {
+                            applyChoice(10, 10, '恭喜你！完整掌握了中国特色社会主义法治体系的五大体系。你获得了文物：法治体系图。', '法治体系图', 'case4', 0);
+                        }, 300);
+                    }
+                } else {
+                    slot.style.background = '#ffd6d6';
+                    setTimeout(() => { slot.style.background = ''; }, 500);
+                    alert('位置不对，再想想：' + slot.textContent.trim());
+                }
+            };
+        });
+    }
+
+    // ==================== 渲染场景 ====================
+    function renderScene() {
+        const contentDiv = document.getElementById('dynamicContent');
+        const scene = scenes[gameState.currentScene];
+        if (!scene) return;
+
+        if (gameState.currentScene === 'ending') {
+            renderEnding(contentDiv);
+            return;
+        }
+
+        const step = scene.steps[gameState.currentStep];
+        if (!step) {
+            const keys = Object.keys(scenes);
+            const idx = keys.indexOf(gameState.currentScene);
+            if (idx < keys.length - 1) {
+                gameState.currentScene = keys[idx + 1];
+                gameState.currentStep = 0;
+                renderScene();
+            } else {
+                gameState.currentScene = 'ending';
+                renderScene();
+            }
+            return;
+        }
+
+        let html = `
+            <div class="scene-header">
+                <h2>${scene.title}</h2>
+            </div>
+            <div class="scene-content">
+                <div class="scene-image-placeholder">${step.imagePlaceholder || '📜 场景'}</div>
+                <div class="dialogue-box">${step.dialogue}</div>
+            </div>
+        `;
+        contentDiv.innerHTML = html;
+        const sceneContent = contentDiv.querySelector('.scene-content');
+
+        if (step.special === 'lobby') {
+            renderLobby(sceneContent);
+            return;
+        }
+        if (step.special === 'puzzle') {
+            renderPuzzle(sceneContent);
+            return;
+        }
+
+        if (step.options && step.options.length > 0) {
+            const optionsArea = document.createElement('div');
+            optionsArea.className = 'options-area';
+            step.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerHTML = `<span class="option-icon">${opt.icon || '▶'}</span><span>${opt.text}</span>`;
+                btn.onclick = () => {
+                    optionsArea.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+                    applyChoice(opt.proc, opt.sub, opt.feedback, opt.relic, opt.next ? opt.next.scene : null, opt.next ? opt.next.step : undefined);
+                };
+                optionsArea.appendChild(btn);
+            });
+            sceneContent.appendChild(optionsArea);
+        } else if (!step.special) {
+            const btn = document.createElement('button');
+            btn.className = 'continue-btn';
+            btn.textContent = '继续前行 →';
+            btn.onclick = () => {
+                const keys = Object.keys(scenes);
+                const idx = keys.indexOf(gameState.currentScene);
+                if (idx < keys.length - 1) {
+                    gameState.currentScene = keys[idx + 1];
+                    gameState.currentStep = 0;
+                } else {
+                    gameState.currentScene = 'ending';
+                }
+                renderScene();
+            };
+            sceneContent.appendChild(btn);
+        }
+    }
+
+    // ==================== 结局渲染 ====================
+    function renderEnding(contentDiv) {
+        const proc = gameState.proc;
+        const sub = gameState.sub;
+        const diff = Math.abs(proc - sub);
+
+        let title, quote, color;
+        if (diff <= 10) {
+            title = '🏆 法治中国建设者';
+            quote = '“法治兴则国兴，法治强则国强。”你既坚守程序正义，又追求实质正义，在两者之间找到了平衡。你用实际行动诠释了什么是全面依法治国。';
+            color = '#8b2e08';
+        } else if (proc > sub) {
+            title = '⚖️ 程序守护者';
+            quote = '你严守法律程序，但有时忽略了法律背后的温度。法律是成文的道德，道德是内心的法律。程序正义是法治的基石，但实质正义同样重要。';
+            color = '#b1420b';
+        } else {
+            title = '❤️ 正义追求者';
+            quote = '你追求公平正义，但程序正义是法治的基石。无程序则无正义。“100-1=0”，一次不公正的审判，其恶果甚至超过十次犯罪。';
+            color = '#a34e1e';
+        }
+
+        const relicsHtml = gameState.relics.length > 0
+            ? gameState.relics.map(r => `<span style="display:inline-block;background:#e6cfb0;padding:4px 12px;border-radius:20px;margin:4px;font-size:0.8rem;font-weight:600;">📜 ${r}</span>`).join('')
+            : '<span style="color:#999;">未收集到文物</span>';
+
+        contentDiv.innerHTML = `
+            <div class="end-screen">
+                <div class="end-title" style="color:${color};">${title}</div>
+                <div class="end-quote">${quote}</div>
+                <div class="score-summary">
+                    <p><span>⚖️ 程序正义</span><strong>${Math.round(proc)}</strong></p>
+                    <p><span>❤️ 实质正义</span><strong>${Math.round(sub)}</strong></p>
+                    <p><span>📜 收集文物</span><strong>${gameState.relics.length} 件</strong></p>
+                    <p><span>🎯 做出选择</span><strong>${gameState.history.length} 次</strong></p>
+                    <div style="margin-top:10px;text-align:center;">${relicsHtml}</div>
+                </div>
+                <div style="font-size:1rem;line-height:1.8;margin:18px 0;color:#2c1a0e;">
+                    <strong>“法治固根本、稳预期、利长远。”</strong><br>
+                    全面依法治国是国家治理的一场深刻革命。<br>
+                    <span style="color:#b1420b;font-weight:800;font-size:1.15rem;">在法治轨道上全面建设社会主义现代化国家！</span>
+                </div>
+                <button class="restart-btn" onclick="restartGame()">🔄 重新审理</button>
+            </div>
+        `;
+    }
+
+    // ==================== 重新开始 ====================
+    function restartGame() {
+        gameState.proc = 50;
+        gameState.sub = 50;
+        gameState.currentScene = 'prologue';
+        gameState.currentStep = 0;
+        gameState.relics = [];
+        gameState.history = [];
+        gameState.puzzleFilled = 0;
+        gameState.lobbyChoices = {};
+        updateBalanceUI();
+        renderScene();
+    }
+
+    // ==================== 初始化 ====================
+    window.onload = function() {
+        updateBalanceUI();
+        renderScene();
+    };
+</script>
+</body>
+</html>
